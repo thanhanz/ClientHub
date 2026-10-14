@@ -1,0 +1,38 @@
+# Build and test output
+**/[Bb]in/
+**/[Oo]bj/
+artifacts/
+TestResults/
+**/TestResults/
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+
+# IDE and local state
+.vs/
+.idea/
+*.user
+*.suo
+*.sln.docstates
+*.DotSettings.user
+.vscode/*
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Secrets and machine-specific settings
+.env
+.env.*
+!.env.example
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+*.pfx
+*.p12
+*.key
+.aws/
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db
