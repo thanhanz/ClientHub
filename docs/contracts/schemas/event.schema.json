@@ -97,7 +97,8 @@
         "maxLength": 256
       },
       "minItems": 1,
-      "maxItems": 50
+      "maxItems": 50,
+      "uniqueItems": true
     },
     "version": {
       "type": "integer",
@@ -126,6 +127,7 @@
     "occurred_at",
     "created_at",
     "source_refs",
-    "version"
+    "version",
+    "occurred_at_precision"
   ]
 }

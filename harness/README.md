@@ -40,4 +40,4 @@ Review each milestone's goal and design checklist, settle its decisions, then ap
 
 ## Current limits
 
-System design, ERD, workflows, and executable service contracts are still missing. The handoff referenced by the Product Goal is unavailable. The Runner, task files, exact verification commands, and run-state schema are not implemented. Existing build CI and the empty starter test do not establish product readiness.
+System design, ERD, workflows, and draft contracts now exist. The owner-approved revision scope is recorded in docs/architecture/decisions.md; unrelated technology choices and milestone gates still require their own review. The handoff referenced by the Product Goal is unavailable. The Runner, task files, exact verification commands, and run-state schema are not implemented. Existing build CI and the empty starter test do not establish product readiness.

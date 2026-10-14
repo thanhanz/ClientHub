@@ -1,6 +1,6 @@
 # AI Inference Contracts — Python service (future milestone)
 
-> Status: REVIEW CANDIDATE. **Not required for Backend Foundation M1.** Defined now to protect the later backend/AI boundary. Python has no direct database, Jira, email, chat or meeting-provider credentials.
+> Status: REVIEW CANDIDATE. **Not required for Backend Foundation 003.** Defined now to protect the later backend/AI boundary. Python has no direct database, Jira, email, chat or meeting-provider credentials.
 
 ## 1. General transport and trust
 
@@ -28,7 +28,7 @@ Input must contain `request_id`, `schema_version`, `project_id`, normalized sour
 
 Output schema: `schemas/extraction-output.schema.json`.
 
-Each proposed event includes `event_type`, `business_status`, `summary`, `occurred_at`, `source_refs`, `review_required`. Backend verifies source refs and trustable actor attribution. Example: a client-requested due date and PO deferral must produce `REQUESTED_NOT_COMMITTED`; not a fictitious PO promise. Model-provided summary is not automatically an approved business fact.
+Each proposed event includes `event_type`, `business_status`, `summary`, `occurred_at`, required `occurred_at_precision`, `source_refs`, and advisory `review_required`; optional `requested_deadline` and `committed_deadline` preserve distinct dates. Backend persistence starts PENDING_REVIEW unless a separate authorized review is recorded; model review_required=false cannot bypass review. Backend verifies source refs and trustable actor attribution. Example: a client-requested due date and PO deferral must produce `REQUESTED_NOT_COMMITTED`; not a fictitious PO promise. Model-provided summary is not automatically an approved business fact.
 
 ## 4. Mapping contract
 
@@ -38,7 +38,7 @@ Each suggestion has candidate Jira locator, relationship type, rationale, eviden
 
 ## 5. Investigation synthesis contract
 
-Input schema: `schemas/context-bundle.schema.json`. Output schema: `schemas/investigation-result.schema.json`.
+Input schema: `schemas/context-bundle.schema.json`. Output schema: `schemas/investigation-result.schema.json`. Only APPROVED events and CONFIRMED associations are included. All supporting sources must be accessible. Jira due dates are attributed to Jira, not treated as commitments. Description/history/comment excerpts carry their own refs and observation timestamps.
 
 Output findings use `FACT | HYPOTHESIS | UNKNOWN` and `evidence_refs` from input registry, never fabricated IDs. Significant `FACT` findings need appropriately typed refs: an explicit Jira blocker relationship needs a `jira-link` ref; same-assignee context is not evidence of causation. When sources are incomplete, include meaningful `unknowns` and `warnings` instead of false closure.
 
@@ -55,7 +55,7 @@ A deterministic backend validator MUST:
 - `400/422` invalid input; `401/403` invalid internal caller; `429` model/provider rate budget; `503` temporary dependency outage; `504` timeout.
 - Backend retries only idempotent inference operations under bounded policy; outputs have `request_id`, no side-effect approval.
 - If inference fails, the backend retains original business state and reports an incomplete result; no fabricated fallback answer.
-- Backend may use deterministic fixtures/stubs for AI responses in M1 integration testing.
+- Backend may use deterministic AI stubs for 004–006 integration tests; real extraction/synthesis evaluation gates remain required.
 
 ## 7. Evaluation gates
 

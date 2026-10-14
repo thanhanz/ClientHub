@@ -23,8 +23,20 @@
 
 ## Phase gate
 
-M1 backend uses `api-contracts.md` / `provider-contracts.md` / `context-bundle.schema.json` and does **not** call Python. M2–M4 wire up inference operations from `ai-contracts.md` only after the backend interface is verified.
+003 uses source/access API and provider contracts without Python. 004 adds event/extraction contracts, 005 mapping contracts, and 006 context/synthesis contracts. The API inventory describes all milestones, not just backend foundation. Draft 1.0 schemas are revised before initial freeze; deployed compatibility is not claimed.
 
 ## Compatibility examples
 
 Machine-readable example fixtures are under `examples/`. They are illustrative synthetic data and are not Jira production records. Each sample must parse and pass the referenced schema; acceptance tests must separately check semantic requirements.
+
+## Local contract validation
+
+Use a workspace-local environment to avoid global Python dependency conflicts:
+
+```powershell
+py -m venv artifacts/contract-review-venv
+.\artifacts\contract-review-venv\Scripts\python.exe -m pip install -r scripts/requirements-contracts.txt
+.\artifacts\contract-review-venv\Scripts\python.exe scripts/validate-contracts.py
+```
+
+The validator checks all positive schemas/examples, bundle/result reference invariants, and negative mutations. It does not execute backend duplicate-import/mapping behavior, role authorization, or real AI evaluations; those gates remain in 003–006.

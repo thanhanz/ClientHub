@@ -9,3 +9,9 @@ Status: DRAFT deliverable inventory; not an executable task queue. Detailed task
 - [ ] Verify mapping confirmation cannot approve business commitments; test candidate-provider failures.
 - [ ] Record required focused checks and applicable earlier regression gates with actual results.
 - [ ] Present milestone evidence to the owner and stop before the next milestone.
+
+## Approved MVP revision checks
+
+- [ ] MEMBER reads only CONFIRMED mappings of accessible APPROVED events; PO_PM alone proposes/reviews.
+- [ ] Duplicate proposals return the existing mapping unchanged even after rejection; review version and audit changes commit atomically.
+- [ ] Verify many-to-many/unmapped cases and association confirmation never changes commitment status.

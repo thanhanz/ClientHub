@@ -70,7 +70,8 @@
               "maxLength": 256
             },
             "minItems": 1,
-            "maxItems": 50
+            "maxItems": 50,
+            "uniqueItems": true
           },
           "review_required": {
             "type": "boolean"
@@ -79,6 +80,20 @@
             "type": "string",
             "minLength": 1,
             "format": "date"
+          },
+          "committed_deadline": {
+            "type": "string",
+            "minLength": 1,
+            "format": "date"
+          },
+          "occurred_at_precision": {
+            "type": "string",
+            "enum": [
+              "INSTANT",
+              "DATE",
+              "UNKNOWN"
+            ],
+            "minLength": 1
           }
         },
         "required": [
@@ -87,7 +102,8 @@
           "summary",
           "occurred_at",
           "source_refs",
-          "review_required"
+          "review_required",
+          "occurred_at_precision"
         ]
       },
       "minItems": 0,

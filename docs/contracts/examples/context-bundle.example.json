@@ -47,7 +47,8 @@
       "source_refs": [
         "source:22222222-2222-4222-8222-222222222222"
       ],
-      "version": 1
+      "version": 1,
+      "occurred_at_precision": "INSTANT"
     }
   ],
   "event_ticket_links": [
@@ -69,7 +70,29 @@
       "summary": "Google Login failure",
       "status": "Blocked",
       "observed_at": "2026-10-14T01:00:00Z",
-      "assignee_id": "dev-minh"
+      "assignee_id": "dev-minh",
+      "due_date": "2026-10-20",
+      "description_excerpt": {
+        "ref_id": "jira-excerpt:mock-jira:AUTH-101:DESCRIPTION:current",
+        "text": "Google Login fails while the OAuth library upgrade is pending.",
+        "observed_at": "2026-10-14T01:00:00Z"
+      },
+      "history": [
+        {
+          "ref_id": "jira-excerpt:mock-jira:AUTH-101:HISTORY:history-1",
+          "text": "Jira status changed from Open to Blocked.",
+          "occurred_at": "2026-10-13T09:00:00Z",
+          "observed_at": "2026-10-14T01:00:00Z"
+        }
+      ],
+      "comments": [
+        {
+          "ref_id": "jira-excerpt:mock-jira:AUTH-101:COMMENT:comment-1",
+          "text": "The OAuth upgrade is still in progress; the technical root cause remains unconfirmed.",
+          "occurred_at": "2026-10-13T10:00:00Z",
+          "observed_at": "2026-10-14T01:00:00Z"
+        }
+      ]
     },
     {
       "ref_id": "jira:mock-jira:AUTH-102",
@@ -98,7 +121,8 @@
       "ref_id": "source:22222222-2222-4222-8222-222222222222",
       "kind": "SOURCE",
       "project_id": "11111111-1111-4111-8111-111111111111",
-      "evidence_level": "MESSAGE_LEVEL"
+      "evidence_level": "MESSAGE_LEVEL",
+      "observed_at": "2026-10-14T01:00:00Z"
     },
     {
       "ref_id": "event:33333333-3333-4333-8333-333333333333",
@@ -124,6 +148,27 @@
       "project_id": "11111111-1111-4111-8111-111111111111",
       "observed_at": "2026-10-14T01:00:00Z",
       "evidence_level": "JIRA_EXPLICIT_LINK"
+    },
+    {
+      "ref_id": "jira-excerpt:mock-jira:AUTH-101:DESCRIPTION:current",
+      "kind": "JIRA_EXCERPT",
+      "project_id": "11111111-1111-4111-8111-111111111111",
+      "observed_at": "2026-10-14T01:00:00Z",
+      "evidence_level": "JIRA_EXCERPT"
+    },
+    {
+      "ref_id": "jira-excerpt:mock-jira:AUTH-101:HISTORY:history-1",
+      "kind": "JIRA_EXCERPT",
+      "project_id": "11111111-1111-4111-8111-111111111111",
+      "observed_at": "2026-10-14T01:00:00Z",
+      "evidence_level": "JIRA_EXCERPT"
+    },
+    {
+      "ref_id": "jira-excerpt:mock-jira:AUTH-101:COMMENT:comment-1",
+      "kind": "JIRA_EXCERPT",
+      "project_id": "11111111-1111-4111-8111-111111111111",
+      "observed_at": "2026-10-14T01:00:00Z",
+      "evidence_level": "JIRA_EXCERPT"
     }
   ],
   "warnings": [],

@@ -1,23 +1,9 @@
-# ClientHub Design Pack
+# ClientHub design documentation
 
-This is a **copy-ready repository subtree**, not a modification to your local PC folder. Merge the files into the matching paths in your own `ClientHub/` repository.
+Architecture and contracts are maintained under docs/architecture and docs/contracts. Their reviewed subset and remaining proposed choices are recorded in [decisions](docs/architecture/decisions.md).
 
-## What is included
+Use the single [numbered milestone roadmap](harness/README.md): 001 design, 002 harness, 003 ingestion/backend, 004 extraction/events, 005 mapping, 006 investigation, 007 demonstration. The imported unnumbered milestone definitions have been consolidated into these review packages; they are not an alternative execution plan.
 
-- Existing `AGENTS.md` and `docs/product/goal.md`, copied unchanged as context.
-- Architecture review candidate: `docs/architecture/{README,system-design,erd,workflows,decisions,tech-stack,traceability}.md`.
-- Contracts review candidate: `docs/contracts/{README,domain-contracts,provider-contracts,api-contracts,ai-contracts}.md`.
-- Versioned JSON schemas in `docs/contracts/schemas/` and valid synthetic examples in `docs/contracts/examples/`.
-- D0 design checklist and bounded M1 backend goal.
+Start at the [design checklist](harness/milestones/001_DesignFoundation/design-checklist.md). Run py scripts/validate-contracts.py for structural/example/reference checks; these checks do not verify runtime authorization or AI semantic correctness.
 
-## Recommended use
-
-1. Read `docs/architecture/README.md` and `decisions.md`; approve or adjust **proposed** technology choices.
-2. Have an independent reviewer challenge system design, ERD, workflows, contracts and the design checklist.
-3. Run JSON schema checks on examples; add your own negative tests and product acceptance fixtures.
-4. Sign off D0, then derive milestone steps from `harness/milestones/backend-foundation/goal.md`.
-5. Allow the coding harness to change only files listed by its task contracts; architecture documents require an authorized change request.
-
-## Important limitation
-
-These are **draft source-of-truth candidates**: the content is consistent with the supplied product goal and handoff in its principal invariants, but unapproved implementation defaults do not become final merely because they are written. Real Jira/Email/Chat/Meeting integration behavior must still be verified against actual provider environments before production use.
+Approve each milestone's detailed gates separately before execution. Mock providers are sufficient for this demo; production connector validation is deferred.

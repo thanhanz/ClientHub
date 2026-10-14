@@ -9,3 +9,9 @@ Status: DRAFT deliverable inventory; not an executable task queue. Detailed task
 - [ ] Test invalid AI payloads/references, denied review, duplicate retries, and service failure; run real extraction evaluations.
 - [ ] Record required focused checks and applicable earlier regression gates with actual results.
 - [ ] Present milestone evidence to the owner and stop before the next milestone.
+
+## Approved MVP revision checks
+
+- [ ] Require at least one source per persisted event; commit event/provenance atomically and deny cross-project links.
+- [ ] Hide events when any supporting source is inaccessible; MEMBER sees APPROVED events only.
+- [ ] Round-trip requested/committed deadlines and occurrence precision; manual and extracted events cannot bypass authorized review.

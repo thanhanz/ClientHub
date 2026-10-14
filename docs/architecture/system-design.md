@@ -41,7 +41,7 @@ flowchart TB
     VALIDATE --> API
 ```
 
-Backend foundation only needs the solid-path components, **without invoking the Python service**. For end-to-end simulations in later milestones, mocked AI responses can be injected at the backend integration boundary.
+The diagram covers the full MVP. 003 implements access, source storage, and fake providers; 004 adds events/extraction, 005 mappings, and 006 context construction/synthesis. Backend foundation does not invoke Python or implement later workflow components. For end-to-end simulations in later milestones, mocked AI responses can be injected at the backend integration boundary.
 
 ## 3. Modules and ownership
 
@@ -65,7 +65,7 @@ Backend foundation only needs the solid-path components, **without invoking the 
 2. Authorization resolves project membership and permitted source access; **project ID in URL is not proof of access**.
 3. Application service executes a bounded use case; provider data is normalized and filtered.
 4. For investigation, an evidence registry of stable refs is created from the **same authorized snapshot** used to build the bundle.
-5. The backend returns a deterministic bundle in M1; when M4 is implemented it calls Python with that bundle and verifies output against the registry.
+5. In 006 the backend builds a deterministic bundle, optionally returns it via the context endpoint, or calls Python and validates output against the same registry.
 6. Audit persists user actions, mapping decisions and investigation summary metadata. Do not store prohibited raw source content merely for observability.
 
 Provider adapters must never be trusted to enforce all application authorization. For each issue, enforce allowed project/provider association and protect against cross-project links in a traversal.
@@ -74,7 +74,7 @@ Provider adapters must never be trusted to enforce all application authorization
 
 `InvestigationPolicy`: max_depth=2, max_tickets=10, max_external_calls=12 are **suggested configurable defaults**, not final production SLA. The backend handles retrieval as a queue/visited-set traversal of explicit Jira links; it must stop on budget, cycles, access denial, irrelevance or missing data. Depth zero means primary issue(s), not all their neighbors.
 
-- Primary issue discovery uses explicit key first, then authorized event mappings and provider search; returned `PROPOSED` mappings are labeled unverified.
+- Primary issue discovery uses explicit key first, then authorized event mappings and provider search; `PROPOSED` mappings are candidate-discovery hints only. Only confirmed associations enter synthesis; rejected mappings are excluded. Only APPROVED events with every supporting source accessible enter the bundle.
 - Traversal consumes only explicit Jira links/hierarchy. Same-assignee workload may be searched **only if relevant** and is never inserted as an explicit dependency.
 - Unmapped events and Jira issues are legitimate outputs.
 - Each evidence item carries ref, source type, source timestamp/observed timestamp, review state if relevant and freshness metadata.
@@ -99,7 +99,7 @@ Mock-to-real replacement happens in the adapter layer. It still requires early r
 
 ## 7. Work scheduling, failure and observability
 
-- M1 seeded/manual ingestion and bundle retrieval may run synchronously for speed, with cancellation tokens, safe timeouts and idempotent writes.
+- 003 fixture ingestion and 006 bundle retrieval may run synchronously for speed, with cancellation tokens, safe timeouts and idempotent writes.
 - AI/provider ingestion in later milestones must define a durable job/transaction boundary before retries or process-restart recovery are promised. No volatile background loop may be labeled durable.
 - Structured logs include correlation ID, project *identifier*, operation, duration, result code, provider freshness and budget consumption; redact source content, tokens, credentials, full prompts.
 - Audit includes actor, action, target, project, timestamp, prior/new status and correlation ID; append-only for review actions.
@@ -113,15 +113,18 @@ Mock-to-real replacement happens in the adapter layer. It still requires early r
 - Store service credentials in environment/secret managers, never checked into fixtures.
 - AI calls must be service-authenticated, network restricted and subject to payload size, timeout, schema and cost budgets.
 - No `DELETE/UPDATE Jira issue` operations in the adapter interface.
-- Sensitive evidence is only returned to users authorized for the underlying sources (M1 `visibility_class`: `PROJECT_MEMBERS` vs `PO_PM_ONLY`), not merely users with access to the parent project.
+- Sensitive evidence is only returned to users authorized for the underlying sources (003 `visibility_class`: `PROJECT_MEMBERS` vs `PO_PM_ONLY`), not merely users with access to the parent project.
 
-## 9. Backend Foundation exit criteria
+## 9. Numbered milestone exit criteria
 
-- All M1 API calls project-scoped; unauthorized access is demonstrably denied.
-- Persistence migrations + repeatable seed work on isolated PostgreSQL; deduplication and history rules are tested.
-- Synthetic explicit Jira blocker is retrieved without creating a false Apple Login dependency.
-- Authorized investigation context bundle has resolvable refs, correct timestamps, status/review flags and policy limits.
-- `PROPOSED` / `CONFIRMED` / `REJECTED` mapping review is audited and does not create a business commitment.
-- Fresh start, builds, unit/integration and key acceptance tests pass; no LLM required.
+- 003: authorized project/source access, stable fixture IDs and duplicate imports returning stored data unchanged; isolated persistence/startup and reusable source/Jira adapter checks. No LLM, event review, mapping review, or investigation endpoint required.
+- 004: events with at least one permitted source, occurrence precision and requested/committed deadlines; PO_PM review and audit; MEMBER reads approved events only; extraction evaluations and chronology checks.
+- 005: unique mappings across all statuses, audited optimistic review, preserved rejected proposals, and no commitment side effects.
+- 006: PO_PM-only investigation, approved and fully accessible event evidence, confirmed association context, bounded explicit Jira expansion, field/excerpt evidence, and validated synthesis.
+- 007: all product acceptance cases and demo narratives with actual evidence.
 
-See `../../harness/milestones/backend-foundation/goal.md` for task-specific readiness and out-of-scope rules.
+See [numbered roadmap](../../harness/README.md). Milestone reviews remain separate from Runner verification.
+
+## 10. Jira field evidence
+
+006 may include the Jira due date and bounded authorized description/history/comment excerpts as specified in provider-contracts.md §6. Each excerpt has its own jira-excerpt ref and observation timestamp; occurred time is included only when known. Registry kind JIRA_EXCERPT resolves to the included excerpt. Truncation and unavailable fields are disclosed. Jira due dates never imply a customer commitment.

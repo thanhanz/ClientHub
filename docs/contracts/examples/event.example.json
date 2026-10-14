@@ -12,5 +12,6 @@
   "source_refs": [
     "source:22222222-2222-4222-8222-222222222222"
   ],
-  "version": 1
+  "version": 1,
+  "occurred_at_precision": "INSTANT"
 }

@@ -9,3 +9,9 @@ Status: DRAFT deliverable inventory; not an executable task queue. Detailed task
 - [ ] Verify explicit blockers never become shared-assignee causal guesses; run real synthesis evaluations.
 - [ ] Record required focused checks and applicable earlier regression gates with actual results.
 - [ ] Present milestone evidence to the owner and stop before the next milestone.
+
+## Approved MVP revision checks
+
+- [ ] Only PO_PM can request context/synthesis; include APPROVED events with all sources accessible and CONFIRMED associations only.
+- [ ] Test deterministic context with Python disconnected separately from real AI evaluations.
+- [ ] Validate cycles, cross-project denial, explicit blockers, bounded retrieval, reference registry, Jira due date and authorized bounded excerpts.

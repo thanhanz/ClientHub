@@ -10,7 +10,20 @@
       "source_refs": [
         "source:22222222-2222-4222-8222-222222222222"
       ],
-      "review_required": true
+      "review_required": true,
+      "occurred_at_precision": "INSTANT"
+    },
+    {
+      "event_type": "COMMITMENT_MADE",
+      "business_status": "COMMITTED",
+      "summary": "PO explicitly committed Sales Export for October 20 in the approved notes.",
+      "occurred_at": "2026-10-13T00:00:00Z",
+      "occurred_at_precision": "DATE",
+      "source_refs": [
+        "source:66666666-6666-4666-8666-666666666666"
+      ],
+      "review_required": true,
+      "committed_deadline": "2026-10-20"
     }
   ],
   "warnings": []

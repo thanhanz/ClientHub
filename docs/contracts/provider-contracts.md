@@ -70,3 +70,9 @@ public interface IJiraIssueReader
 ## 6. Real integration migration gate (deferred)
 
 Before calling a real integration ready, run a bounded sandbox contract spike: verify user/app credentials, issue search and links APIs, real pagination, changelog access, permissions, redaction, timezone, rate limits, and mapping from real project to Hub project. Do not widen AI access to solve provider gaps.
+
+## 6. Bounded Jira evidence for 006
+
+The normalized issue may include dueDate and authorized description/history/comment excerpts. The wire bundle uses due_date, description_excerpt (one object), history (at most 10 entries), and comments (at most 10 entries). Each excerpt has ref_id, text (at most 2000 characters), observed_at, and occurred_at when the provider establishes an occurrence/update time. Missing fields are omitted, never invented. Exceeding a bound sets bundle truncated=true and a warning; unavailable evidence produces a warning. Apply field/comment visibility before inclusion.
+
+Excerpt refs use jira-excerpt:{instance}:{issue}:{DESCRIPTION|HISTORY|COMMENT}:{item_id}; use provider item IDs or deterministic fixture IDs and current for the description snapshot. IDs follow the domain encoding rules. Register every included excerpt as JIRA_EXCERPT; claim validation resolves the exact excerpt in the same authorized snapshot. Due date uses the issue ref. Excerpts remain in retrieved context, not a Jira mirror table. All pagination/retrieval calls still consume the request budget.

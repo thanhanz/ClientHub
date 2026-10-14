@@ -1,10 +1,10 @@
 # ERD and Persistence Design — ClientHub
 
-> Status: REVIEW CANDIDATE. This is the **initial logical relational schema for backend foundation**, not a claim that all tables already exist. Product concepts come from `../product/goal.md`; Jira mock issue data is deliberately **not** a source-of-truth table.
+> Status: REVIEW CANDIDATE. This is the **logical relational schema across milestones 003–006**, not a claim that all tables already exist. Product concepts come from `../product/goal.md`; Jira mock issue data is deliberately **not** a source-of-truth table.
 
 ## 1. Principles
 
-- Business events are first-class, with zero-to-many source links and zero-to-many Jira mappings.
+- Business events are first-class, with one-to-many source links and zero-to-many Jira mappings.
 - A Jira issue can relate to multiple events. Event-to-ticket links are explicit Hub review objects.
 - Jira issue details, links, assignees, status and history remain **Jira-owned**; an initial mock adapter reads fixtures, with later real read-only adapter. Do not create a `jira_issues` table merely to satisfy relational foreign keys.
 - Preserve occurrence time (`occurred_at`) separately from import time (`ingested_at`) and record creation (`created_at`). Use UTC instants in persistence with client timezone rendering separately.
@@ -18,7 +18,7 @@ erDiagram
     PROJECTS ||--o{ PROJECT_MEMBERSHIPS : authorizes
     PROJECTS ||--o{ SOURCE_DOCUMENTS : owns
     PROJECTS ||--o{ EVENTS : owns
-    EVENTS ||--o{ EVENT_SOURCE_LINKS : traces_to
+    EVENTS ||--|{ EVENT_SOURCE_LINKS : traces_to
     SOURCE_DOCUMENTS ||--o{ EVENT_SOURCE_LINKS : supports
     EVENTS ||--o{ EVENT_TICKET_LINKS : maps_to
     EVENTS ||--o{ EVENT_REVISIONS : records_history
@@ -55,6 +55,9 @@ erDiagram
       string review_status
       string summary
       timestamp occurred_at
+      string occurred_at_precision
+      date requested_deadline
+      date committed_deadline
       timestamp created_at
       int version
     }
@@ -101,16 +104,16 @@ External Jira identity on `EVENT_TICKET_LINKS` is a **logical reference** (`jira
 | --- | --- | --- |
 | `projects` | `id UUID PK`, `project_key`, `name` | unique normalized `project_key`; immutable ID |
 | `project_memberships` | `id`, `project_id FK`, `actor_id`, `role` | unique `(project_id, actor_id)`; roles resolved from trusted identity |
-| `source_documents` | `id`, `project_id FK`, `source_type`, `provider_instance_key`, `external_source_id`, `occurred_at`, `ingested_at`, `retention_mode`, `actor_kind`, `visibility_class`, optional `approved_notes` or `permitted_text`, title and actor metadata | unique `(project_id, source_type, provider_instance_key, external_source_id)` when external ID supplied; no indefinite temporary transcripts |
-| `events` | `id`, `project_id FK`, `event_type`, `business_status`, `review_status`, `summary`, `occurred_at`, `created_at`, `version`, optional `reviewed_by` / `reviewed_at` | summary required; occurrence timestamp supported by source or marked uncertain, requested/committed deadlines distinct; no enforced Jira mapping requirement |
+| `source_documents` | `id`, `project_id FK`, `source_type`, `provider_instance_key`, `external_source_id`, `occurred_at`, `ingested_at`, `retention_mode`, `actor_kind`, `visibility_class`, optional `approved_notes` or `permitted_text`, title and actor metadata | unique `(project_id, source_type, provider_instance_key, external_source_id)` for every fixture source; duplicates return stored data unchanged; no indefinite temporary transcripts |
+| `events` | `id`, `project_id FK`, `event_type`, `business_status`, `review_status`, `summary`, `occurred_at`, `occurred_at_precision`, `created_at`, `version`, optional `requested_deadline`, `committed_deadline`, `reviewed_by` / `reviewed_at` | summary required; occurrence timestamp supported by source or marked uncertain, requested/committed deadlines distinct; no enforced Jira mapping requirement |
 | `event_source_links` | `id`, `event_id FK`, `source_document_id FK`, `evidence_level`, optional approved locator | unique `(event_id, source_document_id, evidence_level)`; **same project** for event and source; meeting-level allowed |
-| `event_ticket_links` | `id`, `project_id FK`, `event_id FK`, `jira_instance_key`, `jira_issue_key`, `relationship_type`, `origin`, `verification_status`, `version`, optional `reviewed_by`, `reviewed_at`, `created_at` | unique active `(event_id, jira_instance_key, jira_issue_key, relationship_type)`; **same project**; no fake Jira dependency; independent of commitment approval |
+| `event_ticket_links` | `id`, `project_id FK`, `event_id FK`, `jira_instance_key`, `jira_issue_key`, `relationship_type`, `origin`, `verification_status`, `version`, optional `reviewed_by`, `reviewed_at`, `created_at` | unique `(event_id, jira_instance_key, jira_issue_key, relationship_type)` across all statuses; **same project**; no fake Jira dependency; independent of commitment approval |
 | `event_revisions` | `id`, `event_id FK`, `version`, `changed_by`, `changed_at`, permitted field delta or snapshot | append-only; unique `(event_id, version)`; prevent silent overwrite of reviewed facts; no prohibited raw source content |
 | `review_audit` | `id`, `project_id FK`, `actor_id`, `action`, `entity_type`, `entity_id`, `before_status`, `after_status`, `occurred_at`, `correlation_id` | append-only, actor from server identity; record mapping/event reviews and relevant sensitive decisions |
 
 ### Cross-project consistency
 
-Source `visibility_class` is initially `PROJECT_MEMBERS` or `PO_PM_ONLY`. Source read, related event read and context inclusion must enforce this restriction. Provider-specific ACLs are an integration extension, not silently treated as project-wide access.
+Source `visibility_class` is initially `PROJECT_MEMBERS` or `PO_PM_ONLY`. Source read, related event read and context inclusion must enforce this restriction. Every supporting source must be accessible; otherwise hide the whole derived event and its mappings. Only APPROVED events and CONFIRMED associations enter synthesis. Provider-specific ACLs are an integration extension, not silently treated as project-wide access.
 
 All repository writes must verify that `event.project_id = source.project_id` and `event.project_id = event_ticket_link.project_id`. Application checks **and** database-enforced constraints where feasible (composite unique/FKs or transactional validation) are required; plain foreign keys on IDs alone do not guarantee this. Tests must attempt cross-project association and receive denial.
 
@@ -121,7 +124,7 @@ All repository writes must verify that `event.project_id = source.project_id` an
 - `created_at`: when the Hub event/link record was inserted.
 - `reviewed_at`: when an authorized review action occurred.
 - `observed_at`: when the Jira adapter saw an issue record (in normalized provider DTO, not necessarily relational storage).
-- Changes to reviewed events write an event revision and an audit entry in the same transaction. For Backend Foundation, it is acceptable to prohibit editing an approved event rather than implement incomplete history.
+- Changes to reviewed events write an event revision and an audit entry in the same transaction. In 004, it is acceptable to prohibit editing an approved event rather than implement incomplete history.
 
 ## 4. Proposed domain enums (canonical list: `../contracts/domain-contracts.md`)
 
@@ -134,7 +137,7 @@ All repository writes must verify that `event.project_id = source.project_id` an
 - `MappingVerificationStatus`: `PROPOSED`, `CONFIRMED`, `REJECTED`
 - `MappingOrigin`: `AI_INFERRED`, `MANUAL`, `EXPLICIT_REFERENCE`, `TICKET_CREATED_FROM_EVENT`
 
-A mapping with `AI_INFERRED` origin may **never** start `CONFIRMED` without recorded PO/PM review. Explicit/manually created links still need origin/actor provenance; whether they can be immediately confirmed is a reviewed workflow decision.
+A mapping with `AI_INFERRED` origin may **never** start `CONFIRMED` without recorded PO/PM review. All new manual/explicit links also start PROPOSED with origin/actor provenance. Duplicate proposals return the existing record unchanged, including rejected records. Reopening/remapping is deferred. Review and audit changes are atomic.
 
 ## 5. Constraints, indexes and deletions
 
@@ -148,3 +151,7 @@ A mapping with `AI_INFERRED` origin may **never** start `CONFIRMED` without reco
 ## 6. Testable integrity cases
 
 `DB-01` duplicated ingestion does not duplicate source records; `DB-02` event/source cross-project link rejected; `DB-03` mapping review version conflict rejected; `DB-04` event may have no ticket; `DB-05` multiple tickets map to one event; `DB-06` reviewed event history not overwritten; `DB-07` occurrence-based timeline remains ordered after late import; `DB-08` source metadata survives permitted content deletion without fabricated evidence.
+
+## Milestone allocation
+
+003 implements projects, memberships, and sources. 004 adds events, source links, event review/audit and required deadline/precision fields. 005 adds mapping persistence/review. 006 adds investigation behavior. Require at least one source at event-creation commit; source-link removal cannot leave a persisted event without provenance. This diagram does not accelerate later entities into 003.

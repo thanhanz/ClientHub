@@ -9,26 +9,28 @@
 - Every route scoped by `projects/{project_id}` verifies membership/role and finer source visibility. Deny before reading protected data.
 - Standard errors use `application/problem+json` with `type`, `title`, `status`, `detail` (safe), `instance`, `trace_id`, optionally `errors`. Do not leak whether inaccessible resources exist.
 - Pagination: `limit` bounded server-side; opaque `cursor` in responses; order stable and deterministic.
-- Mutations accept `Idempotency-Key` where relevant; review transitions require `expected_version` optimistic concurrency. `409` on stale version.
+- Demo source intake requires a stable fixture `external_source_id`; repeated composite source identity returns the existing stored source without mutation (`200`, deduplicated), even if the submitted content differs. No general `Idempotency-Key` mechanism or intake without external IDs in the MVP. Review transitions require `expected_version`; stale or terminal-state transitions return `409`.
 - API responses include `schema_version: "1.0"` for top-level contract objects. See `schemas/`.
 
-## 2. M1 endpoints (Backend Foundation)
+## 2. Endpoints by numbered milestone
+
+003 owns health/source endpoints; 004 owns events/review; 005 owns mappings/review; 006 owns investigation context and synthesis. This is the full MVP interface inventory, not the scope of 003 alone.
 
 | Method | Route | Authorization | Request / response | Errors |
 | --- | --- | --- | --- | --- |
 | `GET` | `/health/live` | none | liveness text/status only | `503` when not alive |
 | `GET` | `/health/ready` | deployment policy | DB/provider readiness status | `503` when not ready |
 | `GET` | `/api/v1/projects/{project_id}/sources` | project member + source ACL | query `limit,cursor`; page of source metadata/approved notes the caller may access | `401,403,404` |
-| `POST` | `/api/v1/projects/{project_id}/sources` | permitted source creator | normalized permitted source; returns source ID and deduplication flag (`201` new / `200` duplicate) | `400,403,409,422` |
-| `GET` | `/api/v1/projects/{project_id}/events` | permitted project/source read | `limit,cursor,review_status`; page sorted `occurred_at`, stable ID | `403,404` |
-| `POST` | `/api/v1/projects/{project_id}/events` | permitted creator | structured event + source IDs; returns new event `201` | `400,403,404,422` |
+| `POST` | `/api/v1/projects/{project_id}/sources` | PO_PM + source ACL | normalized permitted source; returns source ID and deduplication flag (`201` new / `200` duplicate) | `400,403,409,422` |
+| `GET` | `/api/v1/projects/{project_id}/events` | permitted project/source read | `limit,cursor,review_status`; page sorted `occurred_at`, stable ID; MEMBER sees APPROVED only | `403,404` |
+| `POST` | `/api/v1/projects/{project_id}/events` | PO_PM + source ACL | structured event + source IDs; returns new event `201` | `400,403,404,422` |
 | `POST` | `/api/v1/projects/{project_id}/events/{event_id}/review` | PO/PM reviewer | `{decision: APPROVE\|REJECT, expected_version}`; audited review | `403,404,409` |
-| `GET` | `/api/v1/projects/{project_id}/mappings` | project member + evidence ACL | filtered mappings with review status and source refs | `403,404` |
-| `POST` | `/api/v1/projects/{project_id}/mappings` | permitted proposer | event ID + composite Jira issue identity + relationship type + origin, status set server-side `PROPOSED`; returns link `201` | `403,404,409,422` |
+| `GET` | `/api/v1/projects/{project_id}/mappings` | project member + evidence ACL | MEMBER sees CONFIRMED mappings of accessible APPROVED events only; PO_PM sees all accessible review states | `403,404` |
+| `POST` | `/api/v1/projects/{project_id}/mappings` | PO_PM + evidence ACL | event ID + composite Jira issue identity + relationship type + origin, new status set server-side `PROPOSED`; `201` new / `200` existing without mutation | `403,404,409,422` |
 | `POST` | `/api/v1/projects/{project_id}/mappings/{mapping_id}/review` | PO/PM reviewer | `{decision: CONFIRM\|REJECT, expected_version}`; audited `CONFIRMED`/`REJECTED` | `403,404,409` |
-| `POST` | `/api/v1/projects/{project_id}/investigations/context` | permitted investigator | query/question, optional issue key, bounded retrieval policy override only if within server policy; returns evidence bundle | `400,403,404,422,503` |
+| `POST` | `/api/v1/projects/{project_id}/investigations/context` | PO_PM + evidence ACL | query/question, optional issue key, bounded retrieval policy override only if within server policy; returns evidence bundle | `400,403,404,422,503` |
 
-`POST /investigations/context` deliberately returns **deterministic retrieval context**, not an LLM-generated final answer. A `/investigations` synthesis endpoint is a later milestone.
+`POST /investigations/context` deliberately returns **deterministic retrieval context**, not an LLM-generated final answer. The `/investigations` synthesis endpoint belongs to the same 006 milestone.
 
 ### Example — mapping propose
 
@@ -42,7 +44,7 @@
 }
 ```
 
-Server assigns mapping ID, `PROPOSED` status, `version=1`, creator from principal and creation timestamp. `AI_INFERRED` origin may only be created by the trusted backend AI pipeline in M3; do not trust arbitrary clients claiming AI origin.
+Server assigns mapping ID, `PROPOSED` status, `version=1`, creator from principal and creation timestamp. `AI_INFERRED` origin may only be created by the trusted backend AI pipeline in 005; do not trust arbitrary clients claiming AI origin.
 
 ### Example — mapping review
 
@@ -69,13 +71,13 @@ Backend derives authorized project ID from URL and principal; it does not accept
 
 ## 3. API rules by use case
 
-**Sources:** source reference metadata is persisted with normalized verified actor role. When `retention_mode=METADATA_ONLY`, do not accept raw body retention. `visibility_class` (`PROJECT_MEMBERS` or `PO_PM_ONLY`) limits both source and derived event disclosure. Under `APPROVED_NOTES` only `approved_notes` is retained; under `PERMITTED_CONTENT` only policy-permitted `permitted_text` is retained. When meeting approved notes exist, the source is a meeting-level reference, not a verbatim transcript. Identical provider composite ID within a project must be idempotent.
+**Sources:** source reference metadata is persisted with normalized verified actor role. When `retention_mode=METADATA_ONLY`, do not accept raw body retention. `visibility_class` (`PROJECT_MEMBERS` or `PO_PM_ONLY`) limits both source and derived event disclosure. Under `APPROVED_NOTES` only `approved_notes` is retained; under `PERMITTED_CONTENT` only policy-permitted `permitted_text` is retained. When meeting approved notes exist, the source is a meeting-level reference, not a verbatim transcript. Required `(project_id, source_type, provider_instance_key, external_source_id)` identifies a fixture source. Duplicates return stored data without updates. New fixture content uses a new ID or an explicit demo reset.
 
-**Events:** `occurred_at` and `created_at` differ. Event may be unmapped. `source_refs` cannot refer across projects. Event is `PENDING_REVIEW` unless backend explicitly records an authorized/manual reviewed decision. Incoming event type/status are checked for coherence, not accepted blindly.
+**Events:** `occurred_at` and `created_at` differ. Event may be unmapped but must have at least one accessible source. Create the event and source links atomically. `source_refs` cannot refer across projects. All supporting sources must be accessible before returning an event or its mappings. Event is `PENDING_REVIEW` unless backend explicitly records an authorized/manual reviewed decision. Incoming event type/status are checked for coherence, not accepted blindly.
 
-**Mappings:** validate normalized Jira locator via the allowed provider; a link is between event and Jira issue, **not Jira-to-Jira**. Reject duplicates or return existing link according to idempotency contract. Store mapping origin and review evidence.
+**Mappings:** validate normalized Jira locator via the allowed provider; a link is between event and Jira issue, **not Jira-to-Jira**. Return the existing mapping for the same event/Jira identity/relationship in any status, without changes. Rejected mappings stay rejected; reopening/remapping is deferred. Store mapping origin and review evidence.
 
-**Investigation context:** build from authorized events and explicit Jira links. Do not infer causal relationships or generate final claims in M1. Return `truncated`, `warnings`, policy usage, observed times and evidence registry for auditing/verifier use.
+**Investigation context:** only PO_PM may request it; build from authorized APPROVED events and explicit Jira links. Proposed mappings may drive candidate discovery but are omitted as associations from synthesis input. Pending/rejected events and rejected mappings are excluded. The deterministic endpoint does not generate final claims. Return `truncated`, `warnings`, policy usage, observed times and evidence registry for auditing/verifier use.
 
 ## 4. Authorization and errors
 

@@ -52,3 +52,20 @@ Status: UNREVIEWED. Check an item only with exact document/section and review ev
 
 - [ ] Resolve blocking findings and record explicit deferrals with their affected milestones.
 - [ ] Record owner approval of this milestone goal, resolved design, and verification gates against their revision.
+
+## Consolidated design-pack review gates
+
+- [ ] Review each proposed technology decision separately from the approved MVP revision rules.
+- [ ] Verify schema examples and negative contract checks with recorded commands/results.
+- [ ] Confirm 003 runs without Python and 006 deterministic context is tested separately from real AI synthesis.
+- [ ] Record mock-versus-real provider limitations; production sandbox integration is deferred.
+
+## Review sign-off
+
+- Review date:
+- Reviewer:
+- Approved document revision:
+- Remaining findings and explicit conditions:
+- Readiness decision:
+
+The owner approved the specific revision rules recorded in docs/architecture/decisions.md. This does not complete every review item or verify a milestone.

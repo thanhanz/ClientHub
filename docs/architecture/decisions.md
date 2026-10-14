@@ -29,3 +29,20 @@
 ## Decision protocol
 
 To approve: owner changes `Status` in this file to `APPROVED` with date and records any trade-off. A coding agent may only propose edits. Scope-affecting decisions require updates to product goal first. Any new optional technology needs an evidence-based reason (specific acceptance failure, operational limitation or measurable benefit).
+
+## Owner-approved MVP revision — 2026-10-14
+
+Approval source: project owner accepted recommendations 1–4 and 6–9 in the revision discussion and requested a simpler demo-only version of 5. This authorizes the rules below, not blanket technology approval, milestone completion, or Runner verification.
+
+| Revision | Approved rule | Canonical location |
+| --- | --- | --- |
+| 1 | Only numbered 001–007 milestones; 003 ingestion, 004 extraction/events, 005 mapping, 006 investigation | harness/README.md and traceability.md |
+| 2–3 | PO_PM owns mutations/investigation; MEMBER reads only accessible sources, approved events, confirmed mappings; all supporting sources must be accessible | domain-contracts.md §6; api-contracts.md |
+| 4 | Every persisted event has at least one permitted source, including manual events | erd.md; event.schema.json |
+| 5 simplified | Stable fixture external IDs are required; duplicates return stored data unchanged; no general idempotency-key store or ID-less manual intake | domain-contracts.md §1; WF-01 |
+| 6 | One mapping per event/Jira locator/relationship across all states; duplicates preserve status; reopening deferred; review/audit atomic | domain-contracts.md §3 |
+| 7 | Extraction and persistence preserve commitment date and occurrence precision | extraction-output.schema.json; event.schema.json; erd.md |
+| 8 | Approved events only for synthesis; proposed mappings are backend discovery hints, not confirmed associations | domain-contracts.md §4 |
+| 9 | Bounded authorized Jira due date/history/comment/description evidence, with refs and timestamps, no Jira mirror | provider-contracts.md §6; context-bundle.schema.json |
+
+Simplification for 5: fixture edits use a new external ID or an explicit demo reset; re-import never silently edits an existing record. This is a demo scope choice, not a claim of production ingestion recovery.

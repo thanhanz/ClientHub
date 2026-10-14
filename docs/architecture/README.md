@@ -1,6 +1,6 @@
 # Architecture documentation — ClientHub
 
-> Status: **REVIEW CANDIDATE** (2026-10-14). This package is written as a coherent implementation baseline; the project owner must approve the technical choices and `design-foundation/checklist.md` before a coding runner treats them as frozen.
+> Status: **REVIEW CANDIDATE** (2026-10-14). This package is written as a coherent implementation baseline; the project owner must approve the technical choices and `../../harness/milestones/001_DesignFoundation/design-checklist.md` before a coding runner treats them as frozen.
 
 ## Authority and change control
 
@@ -27,11 +27,11 @@ All draft technical decisions are **PROPOSED**, not automatically approved. An a
 
 ## Backend foundation target
 
-The **first implementation milestone** is a deterministic, mock-first vertical slice:
+The product workflows form a deterministic, mock-first vertical slice delivered across 003–006, after the 002 harness milestone:
 
 `seeded permitted sources/events -> stored source provenance -> reviewed mapping -> authorized mock Jira retrieval -> bounded evidence context bundle`.
 
-It does **not** require a Python service, real provider credentials, live Jira, vector search, or a frontend. `backend-foundation/goal.md` defines the narrower completion gate.
+003 covers access, sources, and fake providers only; 004 adds extraction/events, 005 mapping, and 006 investigation. Real AI is required in 004/006, but real provider credentials, live Jira, vector search, and a frontend are not. [Numbered roadmap](../../harness/README.md) defines delivery order.
 
 ## Design review flags
 

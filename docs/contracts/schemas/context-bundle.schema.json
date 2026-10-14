@@ -92,7 +92,18 @@
     "events": {
       "type": "array",
       "items": {
-        "$ref": "event.schema.json"
+        "allOf": [
+          {
+            "$ref": "event.schema.json"
+          },
+          {
+            "properties": {
+              "review_status": {
+                "const": "APPROVED"
+              }
+            }
+          }
+        ]
       },
       "minItems": 0,
       "maxItems": 100
@@ -132,9 +143,7 @@
           "verification_status": {
             "type": "string",
             "enum": [
-              "PROPOSED",
-              "CONFIRMED",
-              "REJECTED"
+              "CONFIRMED"
             ],
             "minLength": 1
           },
@@ -211,6 +220,27 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 200
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "description_excerpt": {
+            "$ref": "#/$defs/jira_excerpt"
+          },
+          "history": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "$ref": "#/$defs/jira_excerpt"
+            }
+          },
+          "comments": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "$ref": "#/$defs/jira_excerpt"
+            }
           }
         },
         "required": [
@@ -306,7 +336,8 @@
               "SOURCE",
               "EVENT",
               "JIRA_ISSUE",
-              "JIRA_LINK"
+              "JIRA_LINK",
+              "JIRA_EXCERPT"
             ],
             "minLength": 1
           },
@@ -336,7 +367,8 @@
               "APPROVED_NOTES",
               "MESSAGE_LEVEL",
               "JIRA_FIELD",
-              "JIRA_EXPLICIT_LINK"
+              "JIRA_EXPLICIT_LINK",
+              "JIRA_EXCERPT"
             ],
             "minLength": 1
           }
@@ -380,5 +412,36 @@
     "evidence_registry",
     "warnings",
     "truncated"
-  ]
+  ],
+  "$defs": {
+    "jira_excerpt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref_id": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 256
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ref_id",
+        "text",
+        "observed_at"
+      ]
+    }
+  }
 }

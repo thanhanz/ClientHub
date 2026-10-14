@@ -2,7 +2,7 @@
 
 > Status: **PROPOSED implementation baseline**, subject to owner approval in `decisions.md`. This design targets the project already visible as `ClientHub.slnx`, `src/Hub.Api`, `tests/Hub.Tests` and a .NET 10 build tree. It does not assert the repository has these dependencies installed yet.
 
-## Stack for Backend Foundation M1
+## Stack for Backend Foundation 003
 
 | Concern | Proposed choice | Implementation note |
 | --- | --- | --- |
@@ -13,12 +13,12 @@
 | Integration tests | xUnit + `WebApplicationFactory` + isolated PostgreSQL | Enforce auth, persistence, state transitions and seed idempotency |
 | Development environment | Docker Compose for DB/API | Use pinned, reviewable container tags and environment-specific secrets |
 | Jira mock | `IJiraIssueReader` + versioned JSON fixtures | Explicit Jira links, realistic pagination and failure behavior |
-| Source mocks | `IExternalSourceReader` + approved notes/communications fixtures | No external email/chat/meeting credentials in M1 |
+| Source mocks | `IExternalSourceReader` + approved notes/communications fixtures | No external email/chat/meeting credentials in 003 |
 | Structured API errors | RFC 7807 ProblemDetails | Stable machine-readable errors and correlation ID |
 | Observability | .NET structured logging and correlation IDs | Never log raw secrets/transcript bodies indiscriminately |
 | Verification | `dotnet build`, `dotnet test`, schema validation, DB migration + API smoke tests | CI/harness records actual exit codes and verified Git commit |
 
-## Post-M1, not required for backend foundation
+## Post-003, not required for backend foundation
 
 - Python + FastAPI for isolated structured LLM inference.
 - Provider-specific Jira REST/source adapter implementations after mock and sandbox contract tests.
@@ -54,4 +54,4 @@ Before creating implementations, inspect actual project files (`Hub.Api.csproj`,
 
 ## Early quality gate
 
-Backend Foundation cannot be declared complete without startup/migration on clean PostgreSQL, isolated API integration tests enforcing project/source access, and a deterministic context bundle contract test executed without Python.
+003 requires startup/migration on clean PostgreSQL and isolated project/source access and fixture deduplication tests. The deterministic context bundle check without Python belongs to 006; real AI evaluations remain separate gates.

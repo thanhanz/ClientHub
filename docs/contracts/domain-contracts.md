@@ -8,7 +8,7 @@
 - `actor_id`: verified principal ID (string), not caller-provided display name; may appear only where allowed by source policy.
 - `source_id`, `event_id`, `mapping_id`: opaque Hub UUID strings. Examples such as `EVT-001` are synthetic aliases only; actual wire IDs should conform to UUID format where schema requires them.
 - Jira external identity: composite `{jira_instance_key, jira_issue_key}`. An issue key is NOT guaranteed globally unique across Jira installations.
-- Provider source identity: `{project_id, source_type, provider_instance_key, external_source_id}` when `external_source_id` exists; otherwise the backend generates an ingestion ID and requires idempotency key for repeatable intake.
+- Provider source identity: `{project_id, source_type, provider_instance_key, external_source_id}` is required for demo intake. Fixture authors supply a stable external ID, including for approved notes. Re-import returns the stored source without updating content or metadata. Changed fixture content needs a new external ID or an explicit demo reset. Intake without an external ID and general idempotency-key storage are deferred.
 - A mapping, source link or Jira traversal may not cross unauthorized project/source boundaries.
 
 ## 2. Enumerations (canonical spelling)
@@ -37,13 +37,13 @@ These values are *designed* initial enums, not exhaustive business ontologies. N
 
 ## 3. Review lifecycles
 
-**Event review:** `PENDING_REVIEW -> APPROVED` or `PENDING_REVIEW -> REJECTED`. Review metadata and project authorization are required. Editing an approved event requires a new revision/audited action; M1 may reject edits rather than implementing amendment.
+**Event review:** `PENDING_REVIEW -> APPROVED` or `PENDING_REVIEW -> REJECTED`. Review metadata and project authorization are required. Editing an approved event requires a new revision/audited action; 004 may reject edits rather than implementing amendment.
 
 **Mapping review:** `PROPOSED -> CONFIRMED` or `PROPOSED -> REJECTED`. A terminal status is not silently reopened. A rejected suggestion does not become confirmed as a side effect of a new AI recommendation. Every review change includes actor, time, optimistic version and audit entry.
 
 **Business state:** NOT a review workflow. `REQUESTED_NOT_COMMITTED` remains so until **new explicit commitment evidence** and an authorized business decision support a separate `COMMITMENT_MADE` event/status. A mapping confirmation cannot update it.
 
-AI-originated associations must initially be `PROPOSED`. A manually created/explicit relationship is recorded with its origin and actor; immediate-confirm semantics are **not** assumed without owner approval.
+All new associations start `PROPOSED`, with origin and actor recorded. Keep one mapping per `(event_id, jira_instance_key, jira_issue_key, relationship_type)` across every status. A repeated proposal returns the existing mapping without changing origin, status, version, or review metadata. Rejected mappings remain rejected; reopening/remapping is deferred. Review updates and their audit entry commit in one transaction.
 
 ## 4. Evidence reference contract
 
@@ -54,11 +54,12 @@ source:{source_uuid}
 event:{event_uuid}
 jira:{jira_instance_key}:{issue_key}
 jira-link:{jira_instance_key}:{from_key}:{relationship}:{to_key}
+jira-excerpt:{jira_instance_key}:{issue_key}:{DESCRIPTION|HISTORY|COMMENT}:{item_id}
 ```
 
 Values cannot contain arbitrary user-controlled path syntax, colon or whitespace in identifier components; the backend encodes/sanitizes provider identifiers. A Jira blocker claim needs an **explicit issue-link ref** with matching direction/relation. Merely listing two Jira issue refs is not adequate proof of blockage.
 
-`evidence_level` differentiates approved notes, message-level and meeting-level references. An event based only on meeting metadata may support *that an approved summary exists*, **not an exact quote or minute-level speaker attribution**. Authorized-but-unreviewed events must be labeled as such in investigation context.
+`evidence_level` differentiates approved notes, message-level and meeting-level references. An event based only on meeting metadata may support *that an approved summary exists*, **not an exact quote or minute-level speaker attribution**. Only `APPROVED` events may enter investigation synthesis. Pending/rejected events remain available to authorized PO/PM reviewers but are excluded from the bundle. Proposed mappings may assist backend candidate discovery only; only confirmed associations enter the synthesis bundle.
 
 ## 5. Time/freshness conventions
 
@@ -71,8 +72,15 @@ Values cannot contain arbitrary user-controlled path syntax, colon or whitespace
 
 ## 6. Data access policies
 
-- PO/PM reviewer: can confirm/reject event review and mapping proposals where authorized by project membership and source visibility.
-- Project member: permitted reads/creates only according to explicitly configured permission policy; **not automatically a reviewer**.
+| Operation | PO_PM | MEMBER |
+| --- | --- | --- |
+| Read accessible sources | Yes | Yes |
+| Read events | All review states, subject to source access | APPROVED only, subject to source access |
+| Read mappings | All review states, subject to source access | CONFIRMED only, for an accessible APPROVED event |
+| Ingest sources; create/review events; propose/review mappings | Yes | No |
+| Request context or AI investigation | Yes | No |
+
+An event must have at least one source, including manually created events. Creation writes the event and source links atomically. A caller must be authorized for **every** supporting source to read an event or its mappings. If any source is inaccessible, omit the entire derived event/mapping and exclude it from AI context; do not partially redact it. Project membership alone cannot override this rule.
 - Unauthorized users receive no source content, ticket context, or evidence reference for that project. Sensitive source ACLs can be stricter than project membership.
 - Test identity may be injected only in guarded Test/Development; in Production all `actor_id` and roles derive from validated authentication.
 - `PO_PM_ONLY` sources and derived event facts are not returned to ordinary project members; a context bundle includes only refs the caller may access. With `METADATA_ONLY`, do not store source bodies. `APPROVED_NOTES` permits only approved notes; `PERMITTED_CONTENT` permits text specifically allowed by source policy. Source retention applies to content, copies, logs and AI payload capture. An audit log must not become an unregulated transcript archive.
