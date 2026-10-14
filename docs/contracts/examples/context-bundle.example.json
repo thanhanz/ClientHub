@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.0",
+  "request_id": "55555555-5555-4555-8555-555555555555",
+  "project_id": "11111111-1111-4111-8111-111111111111",
+  "question": "Why is Google Login blocked?",
+  "generated_at": "2026-10-14T01:00:00Z",
+  "policy": {
+    "max_depth": 2,
+    "max_tickets": 10,
+    "max_external_calls": 12
+  },
+  "usage": {
+    "traversal_depth_reached": 1,
+    "tickets_retrieved": 2,
+    "external_calls_used": 3
+  },
+  "sources": [
+    {
+      "schema_version": "1.0",
+      "source_id": "22222222-2222-4222-8222-222222222222",
+      "ref_id": "source:22222222-2222-4222-8222-222222222222",
+      "project_id": "11111111-1111-4111-8111-111111111111",
+      "source_type": "EMAIL",
+      "provider_instance_key": "mock-email",
+      "external_source_id": "MSG-GOOGLE-001",
+      "occurred_at": "2026-10-12T09:00:00Z",
+      "ingested_at": "2026-10-14T01:00:00Z",
+      "actor_kind": "CLIENT",
+      "retention_mode": "PERMITTED_CONTENT",
+      "observed_at": "2026-10-14T01:00:00Z",
+      "title": "Google Login issue",
+      "visibility_class": "PROJECT_MEMBERS"
+    }
+  ],
+  "events": [
+    {
+      "schema_version": "1.0",
+      "event_id": "33333333-3333-4333-8333-333333333333",
+      "ref_id": "event:33333333-3333-4333-8333-333333333333",
+      "project_id": "11111111-1111-4111-8111-111111111111",
+      "event_type": "BUG_REPORTED",
+      "business_status": "REPORTED",
+      "review_status": "APPROVED",
+      "summary": "Client reported Google Login failure.",
+      "occurred_at": "2026-10-12T09:00:00Z",
+      "created_at": "2026-10-14T01:00:00Z",
+      "source_refs": [
+        "source:22222222-2222-4222-8222-222222222222"
+      ],
+      "version": 1
+    }
+  ],
+  "event_ticket_links": [
+    {
+      "event_ref": "event:33333333-3333-4333-8333-333333333333",
+      "jira_ref": "jira:mock-jira:AUTH-101",
+      "mapping_id": "44444444-4444-4444-8444-444444444444",
+      "relationship_type": "ADDRESSES_REPORTED_ISSUE",
+      "verification_status": "CONFIRMED",
+      "origin": "MANUAL"
+    }
+  ],
+  "tickets": [
+    {
+      "ref_id": "jira:mock-jira:AUTH-101",
+      "project_id": "11111111-1111-4111-8111-111111111111",
+      "jira_instance_key": "mock-jira",
+      "issue_key": "AUTH-101",
+      "summary": "Google Login failure",
+      "status": "Blocked",
+      "observed_at": "2026-10-14T01:00:00Z",
+      "assignee_id": "dev-minh"
+    },
+    {
+      "ref_id": "jira:mock-jira:AUTH-102",
+      "project_id": "11111111-1111-4111-8111-111111111111",
+      "jira_instance_key": "mock-jira",
+      "issue_key": "AUTH-102",
+      "summary": "OAuth library upgrade",
+      "status": "In Progress",
+      "observed_at": "2026-10-14T01:00:00Z",
+      "assignee_id": "dev-nam"
+    }
+  ],
+  "jira_links": [
+    {
+      "ref_id": "jira-link:mock-jira:AUTH-101:BLOCKED_BY:AUTH-102",
+      "jira_instance_key": "mock-jira",
+      "from_issue_key": "AUTH-101",
+      "to_issue_key": "AUTH-102",
+      "relation_type": "BLOCKED_BY",
+      "observed_at": "2026-10-14T01:00:00Z",
+      "source": "JIRA_EXPLICIT_LINK"
+    }
+  ],
+  "evidence_registry": [
+    {
+      "ref_id": "source:22222222-2222-4222-8222-222222222222",
+      "kind": "SOURCE",
+      "project_id": "11111111-1111-4111-8111-111111111111",
+      "evidence_level": "MESSAGE_LEVEL"
+    },
+    {
+      "ref_id": "event:33333333-3333-4333-8333-333333333333",
+      "kind": "EVENT",
+      "project_id": "11111111-1111-4111-8111-111111111111",
+      "review_status": "APPROVED"
+    },
+    {
+      "ref_id": "jira:mock-jira:AUTH-101",
+      "kind": "JIRA_ISSUE",
+      "project_id": "11111111-1111-4111-8111-111111111111",
+      "observed_at": "2026-10-14T01:00:00Z"
+    },
+    {
+      "ref_id": "jira:mock-jira:AUTH-102",
+      "kind": "JIRA_ISSUE",
+      "project_id": "11111111-1111-4111-8111-111111111111",
+      "observed_at": "2026-10-14T01:00:00Z"
+    },
+    {
+      "ref_id": "jira-link:mock-jira:AUTH-101:BLOCKED_BY:AUTH-102",
+      "kind": "JIRA_LINK",
+      "project_id": "11111111-1111-4111-8111-111111111111",
+      "observed_at": "2026-10-14T01:00:00Z",
+      "evidence_level": "JIRA_EXPLICIT_LINK"
+    }
+  ],
+  "warnings": [],
+  "truncated": false
+}

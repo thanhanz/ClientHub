@@ -2,6 +2,8 @@
 
 .NET 10 backend for the PO–Client Communication Hub. The API currently contains the starter weather forecast endpoint; see [product scope](docs/product/goal.md) for the planned MVP.
 
+See the [milestone roadmap and review gates](harness/README.md) for the fake-data MVP plan, separate design/implementation checklists, and Runner-owned execution state. Start with the 001 design review; the executable Runner is not yet implemented.
+
 ## Prerequisites
 
 Install the .NET 10 SDK. Docker commands require Docker with Linux containers and the Compose plugin. `global.json` allows stable .NET 10 SDK feature-band updates.

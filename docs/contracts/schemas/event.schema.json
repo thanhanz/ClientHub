@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clienthub.local/contracts/v1/event.schema.json",
+  "title": "Event",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "1.0"
+      ],
+      "minLength": 1
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "format": "uuid"
+    },
+    "ref_id": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 256
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "format": "uuid"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "BUG_REPORTED",
+        "FEATURE_REQUESTED",
+        "SCOPE_CHANGE_REQUESTED",
+        "DEADLINE_REQUESTED",
+        "COMMITMENT_MADE",
+        "PROPOSAL_MADE",
+        "PROPOSAL_REJECTED",
+        "ESTIMATE_PENDING",
+        "OTHER"
+      ],
+      "minLength": 1
+    },
+    "business_status": {
+      "type": "string",
+      "enum": [
+        "REPORTED",
+        "REQUESTED_NOT_COMMITTED",
+        "PROPOSED",
+        "PENDING_ESTIMATE",
+        "COMMITTED",
+        "REJECTED",
+        "OUT_OF_SCOPE",
+        "UNKNOWN"
+      ],
+      "minLength": 1
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "PENDING_REVIEW",
+        "APPROVED",
+        "REJECTED"
+      ],
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "occurred_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "occurred_at_precision": {
+      "type": "string",
+      "enum": [
+        "INSTANT",
+        "DATE",
+        "UNKNOWN"
+      ],
+      "minLength": 1
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 4,
+        "maxLength": 256
+      },
+      "minItems": 1,
+      "maxItems": 50
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "requested_deadline": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date"
+    },
+    "committed_deadline": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date"
+    }
+  },
+  "required": [
+    "schema_version",
+    "event_id",
+    "ref_id",
+    "project_id",
+    "event_type",
+    "business_status",
+    "review_status",
+    "summary",
+    "occurred_at",
+    "created_at",
+    "source_refs",
+    "version"
+  ]
+}

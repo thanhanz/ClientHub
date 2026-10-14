@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "request_id": "55555555-5555-4555-8555-555555555555",
+  "suggestions": [
+    {
+      "event_ref": "event:33333333-3333-4333-8333-333333333333",
+      "jira_instance_key": "mock-jira",
+      "jira_issue_key": "AUTH-101",
+      "relationship_type": "ADDRESSES_REPORTED_ISSUE",
+      "rationale": "Same feature and reported symptom, subject to PO/PM review",
+      "confidence": 0.87,
+      "evidence_refs": [
+        "event:33333333-3333-4333-8333-333333333333",
+        "jira:mock-jira:AUTH-101"
+      ]
+    }
+  ],
+  "warnings": []
+}

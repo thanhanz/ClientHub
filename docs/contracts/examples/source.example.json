@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "source_id": "22222222-2222-4222-8222-222222222222",
+  "ref_id": "source:22222222-2222-4222-8222-222222222222",
+  "project_id": "11111111-1111-4111-8111-111111111111",
+  "source_type": "EMAIL",
+  "provider_instance_key": "mock-email",
+  "external_source_id": "MSG-GOOGLE-001",
+  "occurred_at": "2026-10-12T09:00:00Z",
+  "ingested_at": "2026-10-14T01:00:00Z",
+  "actor_kind": "CLIENT",
+  "retention_mode": "PERMITTED_CONTENT",
+  "observed_at": "2026-10-14T01:00:00Z",
+  "title": "Google Login issue",
+  "visibility_class": "PROJECT_MEMBERS"
+}

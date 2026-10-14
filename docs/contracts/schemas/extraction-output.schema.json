@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clienthub.local/contracts/v1/extraction-output.schema.json",
+  "title": "Extraction Output",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "1.0"
+      ],
+      "minLength": 1
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "format": "uuid"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "enum": [
+              "BUG_REPORTED",
+              "FEATURE_REQUESTED",
+              "SCOPE_CHANGE_REQUESTED",
+              "DEADLINE_REQUESTED",
+              "COMMITMENT_MADE",
+              "PROPOSAL_MADE",
+              "PROPOSAL_REJECTED",
+              "ESTIMATE_PENDING",
+              "OTHER"
+            ],
+            "minLength": 1
+          },
+          "business_status": {
+            "type": "string",
+            "enum": [
+              "REPORTED",
+              "REQUESTED_NOT_COMMITTED",
+              "PROPOSED",
+              "PENDING_ESTIMATE",
+              "COMMITTED",
+              "REJECTED",
+              "OUT_OF_SCOPE",
+              "UNKNOWN"
+            ],
+            "minLength": 1
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "occurred_at": {
+            "type": "string",
+            "minLength": 1,
+            "format": "date-time"
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 256
+            },
+            "minItems": 1,
+            "maxItems": 50
+          },
+          "review_required": {
+            "type": "boolean"
+          },
+          "requested_deadline": {
+            "type": "string",
+            "minLength": 1,
+            "format": "date"
+          }
+        },
+        "required": [
+          "event_type",
+          "business_status",
+          "summary",
+          "occurred_at",
+          "source_refs",
+          "review_required"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      },
+      "minItems": 0,
+      "maxItems": 50
+    }
+  },
+  "required": [
+    "schema_version",
+    "request_id",
+    "events",
+    "warnings"
+  ]
+}

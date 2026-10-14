@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "request_id": "55555555-5555-4555-8555-555555555555",
+  "claims": [
+    {
+      "claim_id": "C-001",
+      "statement": "Jira records AUTH-101 as blocked by AUTH-102.",
+      "claim_type": "FACT",
+      "evidence_refs": [
+        "jira-link:mock-jira:AUTH-101:BLOCKED_BY:AUTH-102"
+      ]
+    },
+    {
+      "claim_id": "C-002",
+      "statement": "The technical root cause is not independently established by these records.",
+      "claim_type": "UNKNOWN",
+      "evidence_refs": []
+    }
+  ],
+  "unknowns": [
+    "The underlying technical root cause is unconfirmed."
+  ],
+  "warnings": []
+}

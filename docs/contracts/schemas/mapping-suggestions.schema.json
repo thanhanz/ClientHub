@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clienthub.local/contracts/v1/mapping-suggestions.schema.json",
+  "title": "Mapping Suggestions",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "1.0"
+      ],
+      "minLength": 1
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "format": "uuid"
+    },
+    "suggestions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "event_ref": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 256
+          },
+          "jira_instance_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "jira_issue_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "relationship_type": {
+            "type": "string",
+            "enum": [
+              "ADDRESSES_REPORTED_ISSUE",
+              "IMPLEMENTS_REQUEST",
+              "HAS_REQUESTED_DEADLINE_FOR",
+              "COMMITMENT_COVERS_WORK",
+              "RELATED_TO"
+            ],
+            "minLength": 1
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 256
+            },
+            "minItems": 1,
+            "maxItems": 30
+          }
+        },
+        "required": [
+          "event_ref",
+          "jira_instance_key",
+          "jira_issue_key",
+          "relationship_type",
+          "rationale",
+          "confidence",
+          "evidence_refs"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      },
+      "minItems": 0,
+      "maxItems": 50
+    }
+  },
+  "required": [
+    "schema_version",
+    "request_id",
+    "suggestions",
+    "warnings"
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clienthub.local/contracts/v1/investigation-result.schema.json",
+  "title": "Investigation Result",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "1.0"
+      ],
+      "minLength": 1
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "format": "uuid"
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "claim_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "claim_type": {
+            "type": "string",
+            "enum": [
+              "FACT",
+              "HYPOTHESIS",
+              "UNKNOWN"
+            ],
+            "minLength": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 256
+            },
+            "minItems": 0,
+            "maxItems": 30
+          }
+        },
+        "required": [
+          "claim_id",
+          "statement",
+          "claim_type",
+          "evidence_refs"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1000
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      },
+      "minItems": 0,
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "schema_version",
+    "request_id",
+    "claims",
+    "unknowns",
+    "warnings"
+  ]
+}

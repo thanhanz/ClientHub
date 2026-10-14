@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clienthub.local/contracts/v1/problem-details.schema.json",
+  "title": "Problem Details",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "integer",
+      "minimum": 400,
+      "maximum": 599
+    },
+    "detail": {
+      "type": "string",
+      "minLength": 0
+    },
+    "instance": {
+      "type": "string",
+      "minLength": 0
+    },
+    "trace_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "errors": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {}
+    }
+  },
+  "required": [
+    "type",
+    "title",
+    "status",
+    "trace_id"
+  ]
+}

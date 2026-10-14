@@ -36,3 +36,6 @@ coverage/
 *.log
 .DS_Store
 Thumbs.db
+
+# Runner-owned local execution state and evidence
+/harness/runs/

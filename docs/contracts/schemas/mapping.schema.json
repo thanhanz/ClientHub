@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clienthub.local/contracts/v1/mapping.schema.json",
+  "title": "Mapping",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "1.0"
+      ],
+      "minLength": 1
+    },
+    "mapping_id": {
+      "type": "string",
+      "minLength": 1,
+      "format": "uuid"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "format": "uuid"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "format": "uuid"
+    },
+    "jira_instance_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "jira_issue_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "relationship_type": {
+      "type": "string",
+      "enum": [
+        "ADDRESSES_REPORTED_ISSUE",
+        "IMPLEMENTS_REQUEST",
+        "HAS_REQUESTED_DEADLINE_FOR",
+        "COMMITMENT_COVERS_WORK",
+        "RELATED_TO"
+      ],
+      "minLength": 1
+    },
+    "origin": {
+      "type": "string",
+      "enum": [
+        "AI_INFERRED",
+        "MANUAL",
+        "EXPLICIT_REFERENCE",
+        "TICKET_CREATED_FROM_EVENT"
+      ],
+      "minLength": 1
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "PROPOSED",
+        "CONFIRMED",
+        "REJECTED"
+      ],
+      "minLength": 1
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "reviewed_by": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    }
+  },
+  "required": [
+    "schema_version",
+    "mapping_id",
+    "project_id",
+    "event_id",
+    "jira_instance_key",
+    "jira_issue_key",
+    "relationship_type",
+    "origin",
+    "verification_status",
+    "version",
+    "created_at"
+  ]
+}

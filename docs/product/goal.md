@@ -262,4 +262,4 @@ The MVP can be declared complete only when:
 
 ---
 
-**Next document to create:** `harness/milestones/backend-foundation/goal.md`, a bounded Day-1 objective derived from this master goal. Do not generate implementation steps until that milestone goal and its verification gates are approved.
+**Next document to create:** `harness/milestones/003_BackendFoundation/goal.md`, a bounded Day-1 objective derived from this master goal. Do not generate implementation steps until that milestone goal and its verification gates are approved.
