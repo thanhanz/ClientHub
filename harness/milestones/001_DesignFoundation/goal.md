@@ -18,6 +18,8 @@ Review the [design checklist](design-checklist.md), then approve the [implementa
 
 Stop at this milestone boundary for owner review. 001/002 bootstrap uses explicitly assigned setup work until independent Runner verification exists.
 
+Current review candidate: [DF-001-R2 revision, remaining decisions, and actual check results](review.md); [scenario inputs](../../../docs/scenarios/fixture-inputs.md) and [separate expected outcomes](../../../docs/scenarios/expected-outcomes.md). Candidate delivery is not owner approval or Runner verification.
+
 ## Exclusions
 
 No application features, migrations, live connectors, or Runner implementation.

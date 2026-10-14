@@ -1,6 +1,8 @@
 # MVP scenario baseline
 
-Status: selected narratives; concrete fixture content awaits 001 review. Authority: [Product Goal §9](../product/goal.md) and owner selection on 2026-10-14.
+Status: REVIEW CANDIDATE, DF-001-R1 (2026-10-15), pending owner approval. Authority: [Product Goal §9](../product/goal.md) and owner selection on 2026-10-14.
+
+Concrete specifications: [runtime inputs](fixture-inputs.md), [test/evaluation-only expected outcomes](expected-outcomes.md), and [remaining design decisions and check results](../../harness/milestones/001_DesignFoundation/review.md). These documents specify future fixtures; they do not implement providers or acceptance tests.
 
 ## Runtime inputs and expected outcomes
 
@@ -10,7 +12,7 @@ Status: selected narratives; concrete fixture content awaits 001 review. Authori
 | Sales Export deadline | Client-requested date; PO deferral; separate explicit commitment example; internal Jira due date | Preserve requested versus committed versus Jira-recorded dates; deferral stays REQUESTED_NOT_COMMITTED |
 | Discount scope change | Initial first-order discount agreement and delivered ticket; later returning-customer request | Preserve historical agreement and new request; Done does not approve expanded scope |
 
-001 must define source text, synthetic actors and dates, stable IDs, project membership, Jira records, and expected assertions. Include approved meeting notes yielding multiple events, late-arriving records, unmapped records, unavailable evidence, and a second unauthorized project as targeted acceptance variants. No real customer data is needed.
+The linked specifications define source text, synthetic actors and dates, stable external IDs, project membership, Jira records, and expected assertions. Targeted variants cover approved meeting notes yielding multiple events, late-arriving records, unmapped records, unavailable evidence, and a second unauthorized project. No real customer data is used. Hub IDs are assigned through ordinary workflows, not confused with scenario aliases.
 
 ## Adapter boundary
 
