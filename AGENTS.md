@@ -8,21 +8,22 @@ You are a **task executor** in a fresh, single-task session. The external Harnes
 | Need | Read |
 | --- | --- |
 | Product goals, scope, non-goals, acceptance criteria | `docs/product/goal.md` (relevant sections only) |
-| Assigned backend milestone | `harness/milestones/003_BackendFoundation/goal.md` **when created** |
-| Assigned task, dependencies, allowed changes, tests | Exact task file/path supplied by the Runner **when created** |
+| Assigned milestone outcome and decisions | `harness/milestones/<NNN_Name>/goal.md` (relevant sections only) |
+| Task readiness and evidence index | The milestone `checklist.md`; never treat checkbox order as a queue |
+| Assigned task, dependencies, allowed changes, tests | Exact `harness/milestones/<NNN_Name>/tasks/<step>.md` supplied by the Runner or bootstrap operator |
 | Approved design decisions | Relevant files under `docs/architecture/` **if present** |
 | API, domain, and AI data contracts | Relevant files under `docs/contracts/` **if present** |
 | Execution and security policies | Relevant files under `harness/policies/` **if present** |
 | Implementation and tests | Relevant files under `src/Hub.Api/` and `tests/Hub.Tests/` |
 | Test commands | `scripts/verify.ps1` **if present**; otherwise use the existing .NET solution/test projects |
 
-Do not treat an empty directory, `.gitkeep`, a proposed design, or an absent task file as an approved specification. If a required contract or decision is missing, report the blocker; do not invent it.
+Do not treat an empty directory, `.gitkeep`, a prepared BLOCKED task, or an absent task file as an approved specification. If a required contract or decision is missing, report the blocker; do not invent it.
 
 ## 2. Session entry protocol
 
 1. Read the Runner-provided **task ID, task file, allowed paths, and verified dependency summary**. If the Runner is not yet implemented, follow the user's **explicitly assigned setup task** only.
 2. Inspect `git status --short` before changes. Do not overwrite unrelated or pre-existing changes.
-3. Read only the product/architecture/contract sections and code needed for this task. Prefer targeted search over whole-repository dumps.
+3. Read only the product/architecture/contract sections and code needed for this task. Prefer targeted search over whole-repository dumps. Starting context target is 10-30K tokens, strictly below 100K; this is not a total-session token guarantee. Read relevant dependency handoffs. Stop and propose a task split if scope/context is too large.
 4. Check prerequisite contracts and downstream interfaces listed by the task. Preserve compatibility; do not implement the next task.
 5. Implement the smallest cohesive change, including task-specific tests.
 6. Run the prescribed focused verification. Report what actually ran and its exit status.
@@ -40,14 +41,28 @@ The full authority for product semantics is `docs/product/goal.md`; the brief st
 
 ## 4. Scope and verification rules
 
+- One current milestone goal, checklist and task set; update them directly only in authorized planning work. Git preserves history.
 - **One assigned step per session.** Modify only allowed paths. If another path is required, stop and request a scope/plan change.
 - Do not weaken, delete, skip, or rewrite required acceptance tests to manufacture a PASS.
 - If `scripts/verify.ps1` exists, use its task-appropriate mode. Until it exists, use applicable checks such as `dotnet build ClientHub.slnx` and `dotnet test tests/Hub.Tests/Hub.Tests.csproj`; explicitly disclose checks that are unavailable.
 - A successful command proves only the checks that actually ran. Do not declare the product or milestone complete from a build alone.
+- The Runner makes the task commit after independent checks; the coding agent does not commit or advance tasks.
 - **Never mark a step `VERIFIED`, edit authoritative runner state, or record an unverified checkpoint.** Only the external Runner may do so after its independent gates pass.
 - On ambiguous requirements, failing prerequisites, unauthorized changes, or repeated verification failures, stop and report the blocker rather than improvising.
 
-## 5. Required end-of-session handoff
+## 5. Engineering Standards
+
+For implementation or refactoring tasks, read:
+
+- docs/standards/architecture.md
+<!-- - docs/standards/coding.md
+- docs/standards/testing.md -->
+
+Treat these documents as implementation constraints.
+
+Do not load unrelated milestone documents.
+
+## 6. Required end-of-session handoff
 
 Return a short, factual summary with these fields:
 
